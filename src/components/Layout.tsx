@@ -9,7 +9,6 @@ import {
     LogOut,
     Menu,
     X,
-    User,
     Bell,
     ShoppingBag,
     Package
@@ -30,7 +29,6 @@ export default function Layout({ children }: LayoutProps) {
     const navigation = [
         { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
         { name: 'Store', href: '/store', icon: ShoppingBag },
-        { name: 'Profile', href: '/profile', icon: User },
         { name: 'Orders', href: '/admin/orders', icon: Package },
         { name: 'Analytics', href: '/admin/stats', icon: LayoutDashboard },
         { name: 'Admin', href: '/admin', icon: Settings },
@@ -93,19 +91,22 @@ export default function Layout({ children }: LayoutProps) {
                                 })}
                         </nav>
 
-                        <div className="p-4 border-t">
-                            <div className="flex items-center gap-3 mb-4 px-2">
-                                <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
+                        <div className="p-4 border-t space-y-2">
+                            <Link
+                                to="/profile"
+                                className="flex items-center gap-3 px-2 py-2 rounded-md hover:bg-accent transition-colors group"
+                            >
+                                <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
                                     {user?.name?.[0] || 'U'}
                                 </div>
-                                <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-medium truncate">{user?.name}</p>
-                                    <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+                                <div className="flex-1 min-w-0 text-left">
+                                    <p className="text-sm font-medium truncate text-foreground">{user?.name}</p>
+                                    <p className="text-xs text-muted-foreground truncate">{user?.username || user?.email}</p>
                                 </div>
-                            </div>
+                            </Link>
                             <Button
-                                variant="destructive"
-                                className="w-full justify-start"
+                                variant="ghost"
+                                className="w-full justify-start text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                                 onClick={logout}
                             >
                                 <LogOut className="mr-2 h-4 w-4" />
