@@ -1,4 +1,5 @@
 import { X, Minus, Plus, Trash2, ShoppingBag } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { Button } from './Button';
 
@@ -11,8 +12,14 @@ export default function CartSidebar() {
         removeFromCart,
         cartTotal
     } = useCart();
+    const navigate = useNavigate();
 
     if (!isCartOpen) return null;
+
+    const handleCheckout = () => {
+        toggleCart();
+        navigate('/checkout');
+    };
 
     return (
         <div className="fixed inset-0 z-50 flex justify-end">
@@ -91,7 +98,12 @@ export default function CartSidebar() {
                         <span className="text-muted-foreground">Total</span>
                         <span className="text-xl font-bold">${cartTotal.toFixed(2)}</span>
                     </div>
-                    <Button className="w-full" size="lg" disabled={cartItems.length === 0}>
+                    <Button
+                        className="w-full"
+                        size="lg"
+                        disabled={cartItems.length === 0}
+                        onClick={handleCheckout}
+                    >
                         Checkout
                     </Button>
                 </div>

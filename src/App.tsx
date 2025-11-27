@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import SignUp from './pages/SignUp';
 import Dashboard from './pages/Dashboard';
 import Store from './pages/Store';
+import Checkout from './pages/Checkout';
 import AdminDashboard from './pages/AdminDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
@@ -25,6 +26,11 @@ export default function App() {
             <Route path="/store" element={
               <ProtectedRoute>
                 <Store />
+              </ProtectedRoute>
+            } />
+            <Route path="/checkout" element={
+              <ProtectedRoute>
+                <Checkout />
               </ProtectedRoute>
             } />
             <Route path="/admin" element={
