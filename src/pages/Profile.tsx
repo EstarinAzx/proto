@@ -10,6 +10,7 @@ export default function Profile() {
     const [profile, setProfile] = useState({
         name: '',
         email: '',
+        username: '',
         profilePicture: '',
     });
     const [passwordData, setPasswordData] = useState({
@@ -36,6 +37,7 @@ export default function Profile() {
             setProfile({
                 name: data.name || '',
                 email: data.email,
+                username: data.username || '',
                 profilePicture: data.profilePicture || '',
             });
         } catch (err) {
@@ -181,10 +183,18 @@ export default function Profile() {
                     <CardContent>
                         <form onSubmit={handleUpdateProfile} className="space-y-4">
                             <Input
+                                label="Username"
+                                value={profile.username}
+                                onChange={(e) => setProfile({ ...profile, username: e.target.value })}
+                                placeholder="username"
+                                required
+                            />
+                            <Input
                                 label="Name"
                                 value={profile.name}
                                 onChange={(e) => setProfile({ ...profile, name: e.target.value })}
                                 placeholder="Your name"
+                                required
                             />
                             <Input
                                 label="Email"

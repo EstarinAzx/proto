@@ -8,6 +8,8 @@ import { LayoutDashboard } from 'lucide-react';
 export default function SignUp() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  const [username, setUsername] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { signup } = useAuth();
   const navigate = useNavigate();
@@ -16,7 +18,7 @@ export default function SignUp() {
     e.preventDefault();
     setIsLoading(true);
     try {
-      await signup(email, password);
+      await signup(email, password, name, username);
       navigate('/dashboard');
     } catch (error) {
       console.error('Failed to signup', error);
@@ -49,10 +51,26 @@ export default function SignUp() {
           <div className="space-y-2 text-center">
             <h1 className="text-3xl font-bold">Create an account</h1>
             <p className="text-muted-foreground">
-              Enter your email below to create your account
+              Enter your details below to create your account
             </p>
           </div>
           <form onSubmit={handleSubmit} className="space-y-4">
+            <Input
+              label="Name"
+              type="text"
+              placeholder="John Doe"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+            <Input
+              label="Username"
+              type="text"
+              placeholder="john_doe"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
             <Input
               label="Email"
               type="email"

@@ -9,16 +9,35 @@ const JWT_SECRET = process.env.JWT_SECRET || 'supersecretkey';
 // Signup
 router.post('/signup', async (req: Request, res: Response): Promise<void> => {
     try {
-        const { email, password, name } = req.body;
+        const { email, password, name, username } = req.body;
 
-        if (!email || !password) {
-            res.status(400).json({ error: 'Email and password are required' });
+        if (!email || !password || !name || !username) {
+            res.status(400).json({ error: 'All fields are required' });
             return;
         }
 
-        const existingUser = await prisma.user.findUnique({ where: { email } });
+        // Validate username format (alphanumeric + underscore, 3-20 chars)
+        const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
+        if (!usernameRegex.test(username)) {
+            res.status(400).json({ error: 'Username must be 3-20 characters and contain only letters, numbers, and underscores' });
+            return;
+        }
+
+        const existingUser = await prisma.user.findFirst({
+            where: {
+                OR: [
+                    { email },
+                    { username }
+                ]
+            }
+        });
+
         if (existingUser) {
-            res.status(400).json({ error: 'User already exists' });
+            if (existingUser.email === email) {
+                res.status(400).json({ error: 'Email already exists' });
+            } else {
+                res.status(400).json({ error: 'Username already taken' });
+            }
             return;
         }
 
@@ -27,12 +46,22 @@ router.post('/signup', async (req: Request, res: Response): Promise<void> => {
             data: {
                 email,
                 password: hashedPassword,
-                name: name || 'User',
+                name,
+                username,
             },
         });
 
         const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '1h' });
-        res.json({ token, user: { id: user.id, email: user.email, name: user.name, role: user.role } });
+        res.json({
+            token,
+            user: {
+                id: user.id,
+                email: user.email,
+                name: user.name,
+                username: user.username,
+                role: user.role
+            }
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal server error' });
@@ -62,7 +91,16 @@ router.post('/login', async (req: Request, res: Response): Promise<void> => {
         }
 
         const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '1h' });
-        res.json({ token, user: { id: user.id, email: user.email, name: user.name, role: user.role } });
+        res.json({
+            token,
+            user: {
+                id: user.id,
+                email: user.email,
+                name: user.name,
+                username: user.username,
+                role: user.role
+            }
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal server error' });

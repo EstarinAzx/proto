@@ -1,0 +1,5 @@
+-- Migration script to add username to existing users
+-- This will be run manually or via Prisma migrate
+-- Add username column (nullable first)
+-- Prisma will handle this via db push
+-- After the column exists, we'll update existing users via the API or a script

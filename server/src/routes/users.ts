@@ -10,6 +10,7 @@ router.get('/', async (req: Request, res: Response) => {
             select: {
                 id: true,
                 email: true,
+                username: true,
                 name: true,
                 role: true,
                 createdAt: true,
@@ -19,6 +20,25 @@ router.get('/', async (req: Request, res: Response) => {
         res.json(users);
     } catch (error) {
         res.status(500).json({ error: 'Failed to fetch users' });
+    }
+});
+
+// Check username availability
+router.get('/check-username', async (req: Request, res: Response) => {
+    try {
+        const { username } = req.query;
+        if (!username || typeof username !== 'string') {
+            res.status(400).json({ error: 'Username is required' });
+            return;
+        }
+
+        const user = await prisma.user.findUnique({
+            where: { username }
+        });
+
+        res.json({ available: !user });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to check username' });
     }
 });
 
@@ -35,9 +55,11 @@ router.get('/me', async (req: Request, res: Response) => {
             select: {
                 id: true,
                 email: true,
+                username: true,
                 name: true,
                 role: true,
                 createdAt: true,
+                profilePicture: true,
             },
         });
 
@@ -59,17 +81,41 @@ router.put('/me', async (req: Request, res: Response) => {
             return res.status(401).json({ error: 'Unauthorized' });
         }
 
-        const { name, email } = req.body;
+        const { name, email, username } = req.body;
+
+        // Validate username if provided
+        if (username) {
+            const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
+            if (!usernameRegex.test(username)) {
+                res.status(400).json({ error: 'Username must be 3-20 characters and contain only letters, numbers, and underscores' });
+                return;
+            }
+
+            // Check if username is taken by another user
+            const existingUser = await prisma.user.findFirst({
+                where: {
+                    username,
+                    NOT: { id: userId }
+                }
+            });
+
+            if (existingUser) {
+                res.status(400).json({ error: 'Username already taken' });
+                return;
+            }
+        }
 
         const user = await prisma.user.update({
             where: { id: userId },
-            data: { name, email },
+            data: { name, email, username },
             select: {
                 id: true,
                 email: true,
+                username: true,
                 name: true,
                 role: true,
                 createdAt: true,
+                profilePicture: true,
             },
         });
 
