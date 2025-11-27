@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard';
 import Store from './pages/Store';
 import AdminDashboard from './pages/AdminDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
+import AdminRoute from './components/AdminRoute';
 
 export default function App() {
   return (
@@ -25,9 +26,9 @@ export default function App() {
             </ProtectedRoute>
           } />
           <Route path="/admin" element={
-            <ProtectedRoute>
+            <AdminRoute>
               <AdminDashboard />
-            </ProtectedRoute>
+            </AdminRoute>
           } />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>

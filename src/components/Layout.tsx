@@ -50,25 +50,27 @@ export default function Layout({ children }: LayoutProps) {
                         </div>
 
                         <nav className="flex-1 p-4 space-y-1">
-                            {navigation.map((item) => {
-                                const Icon = item.icon;
-                                const isActive = location.pathname === item.href;
-                                return (
-                                    <Link
-                                        key={item.name}
-                                        to={item.href}
-                                        className={cn(
-                                            "flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors",
-                                            isActive
-                                                ? "bg-primary/10 text-primary"
-                                                : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                                        )}
-                                    >
-                                        <Icon className="mr-3 h-5 w-5" />
-                                        {item.name}
-                                    </Link>
-                                );
-                            })}
+                            {navigation
+                                .filter(item => item.name !== 'Admin' || user?.role === 'ADMIN')
+                                .map((item) => {
+                                    const Icon = item.icon;
+                                    const isActive = location.pathname === item.href;
+                                    return (
+                                        <Link
+                                            key={item.name}
+                                            to={item.href}
+                                            className={cn(
+                                                "flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors",
+                                                isActive
+                                                    ? "bg-primary/10 text-primary"
+                                                    : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                                            )}
+                                        >
+                                            <Icon className="mr-3 h-5 w-5" />
+                                            {item.name}
+                                        </Link>
+                                    );
+                                })}
                         </nav>
 
                         <div className="p-4 border-t">
