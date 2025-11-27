@@ -7,6 +7,8 @@ import productRoutes from './routes/products';
 import userRoutes from './routes/users';
 import uploadRoutes from './routes/upload';
 import cartRoutes from './routes/cart';
+import orderRoutes from './routes/orders';
+import categoryRoutes from './routes/categories';
 
 dotenv.config();
 
@@ -17,16 +19,13 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-import orderRoutes from './routes/orders';
-
-// ...
-
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/categories', categoryRoutes);
 
 app.get('/health', (req, res) => {
     res.json({ status: 'ok' });

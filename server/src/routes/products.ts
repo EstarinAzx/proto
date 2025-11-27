@@ -6,7 +6,7 @@ const router = Router();
 // Get all products with filtering
 router.get('/', async (req: Request, res: Response) => {
     try {
-        const { search, minPrice, maxPrice } = req.query;
+        const { search, minPrice, maxPrice, categoryId } = req.query;
 
         const where: any = {};
 
@@ -23,8 +23,13 @@ router.get('/', async (req: Request, res: Response) => {
             if (maxPrice) where.price.lte = parseFloat(String(maxPrice));
         }
 
+        if (categoryId) {
+            where.categoryId = String(categoryId);
+        }
+
         const products = await prisma.product.findMany({
             where,
+            include: { category: true },
             orderBy: { createdAt: 'desc' },
         });
         res.json(products);
@@ -36,13 +41,14 @@ router.get('/', async (req: Request, res: Response) => {
 // Create product (Admin only - simplified for now)
 router.post('/', async (req: Request, res: Response) => {
     try {
-        const { name, description, price, imageUrl } = req.body;
+        const { name, description, price, imageUrl, categoryId } = req.body;
         const product = await prisma.product.create({
             data: {
                 name,
                 description,
                 price: parseFloat(price),
                 imageUrl,
+                categoryId: categoryId || null,
             },
         });
         res.json(product);

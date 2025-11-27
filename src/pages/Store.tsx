@@ -5,12 +5,18 @@ import { Button } from '../components/Button';
 import { useCart } from '../context/CartContext';
 import { ShoppingCart } from 'lucide-react';
 
+interface Category {
+    id: string;
+    name: string;
+}
+
 interface Product {
     id: string;
     name: string;
     description: string;
     price: number;
     imageUrl: string;
+    category?: Category;
 }
 
 export default function Store() {
@@ -19,6 +25,8 @@ export default function Store() {
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
     const [priceRange, setPriceRange] = useState({ min: '', max: '' });
+    const [selectedCategory, setSelectedCategory] = useState('');
+    const [categories, setCategories] = useState<Category[]>([]);
 
     const [debouncedSearch, setDebouncedSearch] = useState(search);
 
@@ -31,10 +39,25 @@ export default function Store() {
         return () => clearTimeout(timer);
     }, [search]);
 
+    // Fetch categories on mount
+    useEffect(() => {
+        fetchCategories();
+    }, []);
+
     // Fetch when debounced search or price changes
     useEffect(() => {
         fetchProducts();
-    }, [debouncedSearch, priceRange.min, priceRange.max]);
+    }, [debouncedSearch, priceRange.min, priceRange.max, selectedCategory]);
+
+    const fetchCategories = async () => {
+        try {
+            const response = await fetch('http://localhost:3000/api/categories');
+            const data = await response.json();
+            setCategories(data);
+        } catch (error) {
+            console.error('Failed to fetch categories:', error);
+        }
+    };
 
     const fetchProducts = async () => {
         try {
@@ -46,6 +69,7 @@ export default function Store() {
             if (debouncedSearch) params.append('search', debouncedSearch);
             if (priceRange.min) params.append('minPrice', priceRange.min);
             if (priceRange.max) params.append('maxPrice', priceRange.max);
+            if (selectedCategory) params.append('categoryId', selectedCategory);
 
             const response = await fetch(`http://localhost:3000/api/products?${params.toString()}`);
             const data = await response.json();
@@ -91,6 +115,18 @@ export default function Store() {
                                 onChange={(e) => setSearch(e.target.value)}
                             />
                         </div>
+                        <select
+                            value={selectedCategory}
+                            onChange={(e) => setSelectedCategory(e.target.value)}
+                            className="px-3 py-2 rounded-md border bg-background"
+                        >
+                            <option value="">All Categories</option>
+                            {categories.map((category) => (
+                                <option key={category.id} value={category.id}>
+                                    {category.name}
+                                </option>
+                            ))}
+                        </select>
                         <div className="flex gap-2">
                             <input
                                 type="number"
@@ -107,13 +143,14 @@ export default function Store() {
                                 onChange={(e) => setPriceRange({ ...priceRange, max: e.target.value })}
                             />
                         </div>
-                        {(search || priceRange.min || priceRange.max) && (
+                        {(search || priceRange.min || priceRange.max || selectedCategory) && (
                             <Button
                                 type="button"
                                 variant="outline"
                                 onClick={() => {
                                     setSearch('');
                                     setPriceRange({ min: '', max: '' });
+                                    setSelectedCategory('');
                                 }}
                             >
                                 Clear
