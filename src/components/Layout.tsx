@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
 import { cn } from '../lib/utils';
 import {
     LayoutDashboard,
@@ -9,9 +10,11 @@ import {
     Menu,
     X,
     User,
-    Bell
+    Bell,
+    ShoppingBag
 } from 'lucide-react';
 import { Button } from './Button';
+import CartSidebar from './CartSidebar';
 
 interface LayoutProps {
     children: React.ReactNode;
@@ -19,6 +22,7 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
     const { user, logout } = useAuth();
+    const { toggleCart, cartCount } = useCart();
     const location = useLocation();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -30,12 +34,24 @@ export default function Layout({ children }: LayoutProps) {
 
     return (
         <div className="min-h-screen bg-background">
+            <CartSidebar />
+
             {/* Mobile Header */}
             <div className="lg:hidden flex items-center justify-between p-4 border-b bg-card">
                 <span className="font-bold text-xl">MyApp</span>
-                <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
-                    {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-                </Button>
+                <div className="flex items-center gap-2">
+                    <Button variant="ghost" size="icon" onClick={toggleCart} className="relative">
+                        <ShoppingBag className="h-6 w-6" />
+                        {cartCount > 0 && (
+                            <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-primary text-[10px] font-bold text-primary-foreground flex items-center justify-center">
+                                {cartCount}
+                            </span>
+                        )}
+                    </Button>
+                    <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+                        {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                    </Button>
+                </div>
             </div>
 
             <div className="flex h-screen overflow-hidden">
@@ -98,8 +114,16 @@ export default function Layout({ children }: LayoutProps) {
                 {/* Main Content */}
                 <main className="flex-1 overflow-y-auto bg-background p-4 lg:p-8">
                     <div className="max-w-7xl mx-auto">
-                        {/* Top bar for desktop could go here if needed, e.g. search/notifications */}
-                        <div className="hidden lg:flex justify-end mb-6">
+                        {/* Top bar for desktop */}
+                        <div className="hidden lg:flex justify-end mb-6 gap-2">
+                            <Button variant="ghost" size="icon" onClick={toggleCart} className="relative">
+                                <ShoppingBag className="h-5 w-5" />
+                                {cartCount > 0 && (
+                                    <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-primary text-[10px] font-bold text-primary-foreground flex items-center justify-center">
+                                        {cartCount}
+                                    </span>
+                                )}
+                            </Button>
                             <Button variant="ghost" size="icon">
                                 <Bell className="h-5 w-5" />
                             </Button>
