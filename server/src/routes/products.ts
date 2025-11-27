@@ -41,12 +41,13 @@ router.get('/', async (req: Request, res: Response) => {
 // Create product (Admin only - simplified for now)
 router.post('/', async (req: Request, res: Response) => {
     try {
-        const { name, description, price, imageUrl, categoryId } = req.body;
+        const { name, description, price, stock, imageUrl, categoryId } = req.body;
         const product = await prisma.product.create({
             data: {
                 name,
                 description,
                 price: parseFloat(price),
+                stock: stock ? parseInt(stock) : 0,
                 imageUrl,
                 categoryId: categoryId || null,
             },
@@ -61,7 +62,7 @@ router.post('/', async (req: Request, res: Response) => {
 router.put('/:id', async (req: Request, res: Response): Promise<void> => {
     try {
         const { id } = req.params;
-        const { name, description, price, imageUrl } = req.body;
+        const { name, description, price, stock, imageUrl, categoryId } = req.body;
 
         const product = await prisma.product.update({
             where: { id },
@@ -69,7 +70,9 @@ router.put('/:id', async (req: Request, res: Response): Promise<void> => {
                 name,
                 description,
                 price: parseFloat(price),
-                imageUrl
+                stock: stock !== undefined ? parseInt(stock) : undefined,
+                imageUrl,
+                categoryId: categoryId || null,
             },
         });
 
