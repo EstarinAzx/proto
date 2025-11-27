@@ -30,6 +30,16 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
+        // Validate stock availability
+        for (const item of cart.items) {
+            if (item.product.stock < item.quantity) {
+                res.status(400).json({
+                    error: `Insufficient stock for ${item.product.name}. Available: ${item.product.stock}, Requested: ${item.quantity}`
+                });
+                return;
+            }
+        }
+
         // Calculate total
         const total = cart.items.reduce((sum, item) => {
             return sum + (item.product.price * item.quantity);
@@ -58,6 +68,18 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
                 }
             }
         });
+
+        // Decrement stock for each product
+        for (const item of cart.items) {
+            await prisma.product.update({
+                where: { id: item.productId },
+                data: {
+                    stock: {
+                        decrement: item.quantity
+                    }
+                }
+            });
+        }
 
         // Clear cart
         await prisma.cartItem.deleteMany({
