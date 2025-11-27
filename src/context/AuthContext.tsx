@@ -15,6 +15,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setUser({ email, name: 'User' });
   };
 
+  const signup = async (email: string, password: string): Promise<void> => {
+    await new Promise(resolve => setTimeout(resolve, 500));
+    setUser({ email, name: 'New User' });
+  };
+
   const logout = (): void => {
     setUser(null);
   };
@@ -22,7 +27,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const isAuthenticated = !!user;
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isAuthenticated }}>
+    <AuthContext.Provider value={{ user, login, signup, logout, isAuthenticated }}>
       {children}
     </AuthContext.Provider>
   );
