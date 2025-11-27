@@ -3,10 +3,28 @@ import { prisma } from '../index';
 
 const router = Router();
 
-// Get all products
+// Get all products with filtering
 router.get('/', async (req: Request, res: Response) => {
     try {
+        const { search, minPrice, maxPrice } = req.query;
+
+        const where: any = {};
+
+        if (search) {
+            where.OR = [
+                { name: { contains: String(search), mode: 'insensitive' } },
+                { description: { contains: String(search), mode: 'insensitive' } }
+            ];
+        }
+
+        if (minPrice || maxPrice) {
+            where.price = {};
+            if (minPrice) where.price.gte = parseFloat(String(minPrice));
+            if (maxPrice) where.price.lte = parseFloat(String(maxPrice));
+        }
+
         const products = await prisma.product.findMany({
+            where,
             orderBy: { createdAt: 'desc' },
         });
         res.json(products);

@@ -17,14 +17,37 @@ export default function Store() {
     const { addToCart } = useCart();
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
+    const [search, setSearch] = useState('');
+    const [priceRange, setPriceRange] = useState({ min: '', max: '' });
 
+    const [debouncedSearch, setDebouncedSearch] = useState(search);
+
+    // Debounce search term
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(search);
+        }, 500);
+
+        return () => clearTimeout(timer);
+    }, [search]);
+
+    // Fetch when debounced search or price changes
     useEffect(() => {
         fetchProducts();
-    }, []);
+    }, [debouncedSearch, priceRange.min, priceRange.max]);
 
     const fetchProducts = async () => {
         try {
-            const response = await fetch('http://localhost:3000/api/products');
+            // Don't set loading to true on every keystroke to avoid flickering
+            // Only set it on initial load or if you want a spinner
+            // setLoading(true); 
+
+            const params = new URLSearchParams();
+            if (debouncedSearch) params.append('search', debouncedSearch);
+            if (priceRange.min) params.append('minPrice', priceRange.min);
+            if (priceRange.max) params.append('maxPrice', priceRange.max);
+
+            const response = await fetch(`http://localhost:3000/api/products?${params.toString()}`);
             const data = await response.json();
             setProducts(data);
         } catch (error) {
@@ -32,6 +55,11 @@ export default function Store() {
         } finally {
             setLoading(false);
         }
+    };
+
+    // Remove manual submit handler since we use effects now
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
     };
 
     if (loading) {
@@ -50,6 +78,48 @@ export default function Store() {
                     <p className="text-muted-foreground">
                         Browse our amazing products.
                     </p>
+                </div>
+
+                <div className="bg-card p-4 rounded-lg border shadow-sm">
+                    <form onSubmit={handleSearch} className="flex flex-col md:flex-row gap-4">
+                        <div className="flex-1">
+                            <input
+                                type="text"
+                                placeholder="Search products..."
+                                className="w-full px-3 py-2 rounded-md border bg-background"
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                            />
+                        </div>
+                        <div className="flex gap-2">
+                            <input
+                                type="number"
+                                placeholder="Min Price"
+                                className="w-24 px-3 py-2 rounded-md border bg-background"
+                                value={priceRange.min}
+                                onChange={(e) => setPriceRange({ ...priceRange, min: e.target.value })}
+                            />
+                            <input
+                                type="number"
+                                placeholder="Max Price"
+                                className="w-24 px-3 py-2 rounded-md border bg-background"
+                                value={priceRange.max}
+                                onChange={(e) => setPriceRange({ ...priceRange, max: e.target.value })}
+                            />
+                        </div>
+                        {(search || priceRange.min || priceRange.max) && (
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => {
+                                    setSearch('');
+                                    setPriceRange({ min: '', max: '' });
+                                }}
+                            >
+                                Clear
+                            </Button>
+                        )}
+                    </form>
                 </div>
 
                 {products.length === 0 ? (
