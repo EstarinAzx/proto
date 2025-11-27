@@ -425,6 +425,25 @@ export default function AdminDashboard() {
                                         />
                                         <div>
                                             <label className="block text-sm font-medium mb-2">
+                                                Category
+                                            </label>
+                                            <select
+                                                value={editingProduct.categoryId || ''}
+                                                onChange={(e) =>
+                                                    setEditingProduct({ ...editingProduct, categoryId: e.target.value || undefined })
+                                                }
+                                                className="w-full px-3 py-2 rounded-md border bg-background"
+                                            >
+                                                <option value="">No Category</option>
+                                                {categories.map((category) => (
+                                                    <option key={category.id} value={category.id}>
+                                                        {category.name}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium mb-2">
                                                 Product Image
                                             </label>
                                             <input
