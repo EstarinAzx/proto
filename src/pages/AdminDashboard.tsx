@@ -574,8 +574,9 @@ export default function AdminDashboard() {
                                                             Edit
                                                         </Button>
                                                         <Button
-                                                            variant="destructive"
+                                                            variant="ghost"
                                                             size="sm"
+                                                            className="text-destructive hover:text-destructive hover:bg-destructive/10"
                                                             onClick={() => handleDeleteProduct(product.id)}
                                                         >
                                                             <Trash2 className="h-4 w-4" />
@@ -639,8 +640,9 @@ export default function AdminDashboard() {
                                                 <td className="px-6 py-4 text-xs text-muted-foreground">{category.id}</td>
                                                 <td className="px-6 py-4 text-right">
                                                     <Button
-                                                        variant="destructive"
+                                                        variant="ghost"
                                                         size="sm"
+                                                        className="text-destructive hover:text-destructive hover:bg-destructive/10"
                                                         onClick={() => handleDeleteCategory(category.id)}
                                                     >
                                                         <Trash2 className="h-4 w-4" />
@@ -704,8 +706,9 @@ export default function AdminDashboard() {
                                                         </Button>
                                                     )}
                                                     <Button
-                                                        variant="destructive"
+                                                        variant="ghost"
                                                         size="sm"
+                                                        className="text-destructive hover:text-destructive hover:bg-destructive/10"
                                                         onClick={() => handleDeleteUser(userItem.id, userItem.email)}
                                                     >
                                                         <Trash2 className="h-4 w-4" />
