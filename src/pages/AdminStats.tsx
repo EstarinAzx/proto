@@ -1,8 +1,14 @@
+// ============================================================================
+// Imports
+// ============================================================================
 import { useEffect, useState } from 'react';
 import Layout from '../components/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/Card';
 import { Users, Package, ShoppingCart, DollarSign, AlertTriangle, TrendingUp } from 'lucide-react';
 
+// ============================================================================
+// Types
+// ============================================================================
 interface Stats {
     totalUsers: number;
     totalProducts: number;
@@ -41,17 +47,29 @@ interface OrderByStatus {
     };
 }
 
+// ============================================================================
+// Component
+// ============================================================================
 export default function AdminStats() {
+    // ============================================================================
+    // State
+    // ============================================================================
     const [stats, setStats] = useState<Stats | null>(null);
     const [recentOrders, setRecentOrders] = useState<RecentOrder[]>([]);
     const [lowStockProducts, setLowStockProducts] = useState<LowStockProduct[]>([]);
     const [ordersByStatus, setOrdersByStatus] = useState<OrderByStatus[]>([]);
     const [loading, setLoading] = useState(true);
 
+    // ============================================================================
+    // Effects
+    // ============================================================================
     useEffect(() => {
         fetchStats();
     }, []);
 
+    // ============================================================================
+    // API Calls
+    // ============================================================================
     const fetchStats = async () => {
         try {
             setLoading(true);
@@ -69,6 +87,9 @@ export default function AdminStats() {
         }
     };
 
+    // ============================================================================
+    // Render
+    // ============================================================================
     if (loading) {
         return (
             <Layout>

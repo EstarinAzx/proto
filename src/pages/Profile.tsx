@@ -1,3 +1,6 @@
+// ============================================================================
+// Imports
+// ============================================================================
 import { useEffect, useState } from 'react';
 import Layout from '../components/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/Card';
@@ -5,7 +8,13 @@ import { Button } from '../components/Button';
 import { Input } from '../components/Input';
 import { useAuth } from '../context/AuthContext';
 
+// ============================================================================
+// Component
+// ============================================================================
 export default function Profile() {
+    // ============================================================================
+    // State
+    // ============================================================================
     const { user, refreshUser } = useAuth();
     const [profile, setProfile] = useState({
         name: '',
@@ -22,10 +31,16 @@ export default function Profile() {
     const [error, setError] = useState('');
     const [uploading, setUploading] = useState(false);
 
+    // ============================================================================
+    // Effects
+    // ============================================================================
     useEffect(() => {
         fetchProfile();
     }, []);
 
+    // ============================================================================
+    // API Calls
+    // ============================================================================
     const fetchProfile = async () => {
         try {
             const response = await fetch('http://localhost:3000/api/users/me', {
@@ -45,6 +60,9 @@ export default function Profile() {
         }
     };
 
+    // ============================================================================
+    // Event Handlers
+    // ============================================================================
     const handleUpdateProfile = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
@@ -156,6 +174,9 @@ export default function Profile() {
         }
     };
 
+    // ============================================================================
+    // Render
+    // ============================================================================
     return (
         <Layout>
             <div className="max-w-2xl mx-auto space-y-6">

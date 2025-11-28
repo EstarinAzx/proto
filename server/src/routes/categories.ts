@@ -1,9 +1,20 @@
+// ============================================================================
+// Imports
+// ============================================================================
+
 import { Router, Request, Response } from 'express';
 import { prisma } from '../index';
 
+// ============================================================================
+// Router Setup
+// ============================================================================
+
 const router = Router();
 
-// Get all categories
+// ============================================================================
+// Routes - Get All Categories
+// ============================================================================
+
 router.get('/', async (req: Request, res: Response) => {
     try {
         const categories = await prisma.category.findMany({
@@ -15,7 +26,10 @@ router.get('/', async (req: Request, res: Response) => {
     }
 });
 
-// Create category (Admin only)
+// ============================================================================
+// Routes - Create Category
+// ============================================================================
+
 router.post('/', async (req: Request, res: Response) => {
     try {
         const { name } = req.body;
@@ -27,5 +41,9 @@ router.post('/', async (req: Request, res: Response) => {
         res.status(500).json({ error: 'Failed to create category' });
     }
 });
+
+// ============================================================================
+// Export
+// ============================================================================
 
 export default router;

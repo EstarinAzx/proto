@@ -1,6 +1,12 @@
+// ============================================================================
+// Imports
+// ============================================================================
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 
+// ============================================================================
+// Interfaces/Types
+// ============================================================================
 interface Product {
     id: string;
     name: string;
@@ -28,9 +34,16 @@ interface CartContextType {
     toggleCart: () => void;
 }
 
+// ============================================================================
+// Context Initialization
+// ============================================================================
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
+// ============================================================================
+// Provider Component
+// ============================================================================
 export function CartProvider({ children }: { children: React.ReactNode }) {
+    // State
     const { user } = useAuth();
     const [cartItems, setCartItems] = useState<CartItem[]>([]);
     const [isCartOpen, setIsCartOpen] = useState(false);
@@ -38,6 +51,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
     const cartTotal = cartItems.reduce((acc, item) => acc + (item.product.price * item.quantity), 0);
 
+    // Effects/Persistence
     useEffect(() => {
         if (user) {
             fetchCart();
@@ -61,6 +75,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         }
     };
 
+    // Helper Functions
     const addToCart = async (productId: string, quantity = 1) => {
         if (!user) {
             alert('Please login to add items to cart');
@@ -153,6 +168,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     );
 }
 
+// ============================================================================
+// Custom Hook
+// ============================================================================
 export function useCart() {
     const context = useContext(CartContext);
     if (context === undefined) {

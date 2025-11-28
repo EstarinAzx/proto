@@ -1,3 +1,6 @@
+// ============================================================================
+// Imports
+// ============================================================================
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
@@ -15,16 +18,32 @@ import Profile from './pages/Profile';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
 
+// ============================================================================
+// Main Component
+// ============================================================================
 export default function App() {
   return (
+    // ========================================================================
+    // State Providers
+    // ========================================================================
     <AuthProvider>
       <CartProvider>
+        {/* ==================================================================
+            Router Config
+            ================================================================== */}
         <BrowserRouter>
           <Routes>
+            {/* ==============================================================
+                Public Routes
+                ============================================================== */}
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
+
+            {/* ==============================================================
+                Protected Routes (Authenticated Users)
+                ============================================================== */}
             <Route path="/dashboard" element={
               <ProtectedRoute>
                 <Dashboard />
@@ -45,6 +64,10 @@ export default function App() {
                 <Profile />
               </ProtectedRoute>
             } />
+
+            {/* ==============================================================
+                Admin Routes (Admin/SuperAdmin Only)
+                ============================================================== */}
             <Route path="/admin" element={
               <AdminRoute>
                 <AdminDashboard />
@@ -60,6 +83,10 @@ export default function App() {
                 <AdminStats />
               </AdminRoute>
             } />
+
+            {/* ==============================================================
+                Fallback Route
+                ============================================================== */}
             <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Routes>
         </BrowserRouter>

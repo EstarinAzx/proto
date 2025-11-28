@@ -1,3 +1,6 @@
+// ============================================================================
+// Imports
+// ============================================================================
 import { useEffect, useState } from 'react';
 import Layout from '../components/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/Card';
@@ -5,6 +8,9 @@ import { Button } from '../components/Button';
 import { useCart } from '../context/CartContext';
 import { ShoppingCart } from 'lucide-react';
 
+// ============================================================================
+// Interfaces
+// ============================================================================
 interface Category {
     id: string;
     name: string;
@@ -20,6 +26,9 @@ interface Product {
     category?: Category;
 }
 
+// ============================================================================
+// Component & Hooks
+// ============================================================================
 export default function Store() {
     const { addToCart } = useCart();
     const [products, setProducts] = useState<Product[]>([]);
@@ -31,6 +40,9 @@ export default function Store() {
 
     const [debouncedSearch, setDebouncedSearch] = useState(search);
 
+    // ============================================================================
+    // Filter Logic
+    // ============================================================================
     // Debounce search term
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -50,6 +62,9 @@ export default function Store() {
         fetchProducts();
     }, [debouncedSearch, priceRange.min, priceRange.max, selectedCategory]);
 
+    // ============================================================================
+    // API Fetching
+    // ============================================================================
     const fetchCategories = async () => {
         try {
             const response = await fetch('http://localhost:3000/api/categories');
@@ -82,11 +97,17 @@ export default function Store() {
         }
     };
 
+    // ============================================================================
+    // Event Handlers
+    // ============================================================================
     // Remove manual submit handler since we use effects now
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
     };
 
+    // ============================================================================
+    // Render - Loading State
+    // ============================================================================
     if (loading) {
         return (
             <Layout>
@@ -95,6 +116,9 @@ export default function Store() {
         );
     }
 
+    // ============================================================================
+    // Render - Search/Filter UI
+    // ============================================================================
     return (
         <Layout>
             <div className="space-y-6">
@@ -160,6 +184,9 @@ export default function Store() {
                     </form>
                 </div>
 
+                {/* ============================================================================ */}
+                {/* Render - Product Grid */}
+                {/* ============================================================================ */}
                 {products.length === 0 ? (
                     <Card>
                         <CardContent className="py-12 text-center text-muted-foreground">

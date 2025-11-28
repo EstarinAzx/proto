@@ -1,9 +1,74 @@
+// ============================================================================
+// Imports
+// ============================================================================
+
 import { Router, Request, Response } from 'express';
 import { prisma } from '../index';
 
+// ============================================================================
+// Router Setup
+// ============================================================================
+
 const router = Router();
 
-// Create or update review
+// ============================================================================
+// Routes - Get Reviews
+// ============================================================================
+
+router.get('/:productId', async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { productId } = req.params;
+        const { page = '1', limit = '10' } = req.query;
+
+        const pageNum = parseInt(page as string);
+        const limitNum = parseInt(limit as string);
+        const skip = (pageNum - 1) * limitNum;
+
+        const [reviews, total] = await Promise.all([
+            prisma.review.findMany({
+                where: { productId },
+                include: {
+                    user: {
+                        select: {
+                            name: true,
+                            email: true
+                        }
+                    }
+                },
+                orderBy: { createdAt: 'desc' },
+                skip,
+                take: limitNum
+            }),
+            prisma.review.count({ where: { productId } })
+        ]);
+
+        // Calculate average rating
+        const avgRating = await prisma.review.aggregate({
+            where: { productId },
+            _avg: { rating: true }
+        });
+
+        res.json({
+            reviews,
+            averageRating: avgRating._avg.rating || 0,
+            totalReviews: total,
+            pagination: {
+                page: pageNum,
+                limit: limitNum,
+                total,
+                totalPages: Math.ceil(total / limitNum)
+            }
+        });
+    } catch (error) {
+        console.error('Get reviews error:', error);
+        res.status(500).json({ error: 'Failed to fetch reviews' });
+    }
+});
+
+// ============================================================================
+// Routes - Create Review
+// ============================================================================
+
 router.post('/:productId', async (req: Request, res: Response): Promise<void> => {
     try {
         const userId = req.headers['user-id'] as string;
@@ -75,58 +140,10 @@ router.post('/:productId', async (req: Request, res: Response): Promise<void> =>
     }
 });
 
-// Get reviews for a product
-router.get('/:productId', async (req: Request, res: Response): Promise<void> => {
-    try {
-        const { productId } = req.params;
-        const { page = '1', limit = '10' } = req.query;
+// ============================================================================
+// Routes - Delete Review
+// ============================================================================
 
-        const pageNum = parseInt(page as string);
-        const limitNum = parseInt(limit as string);
-        const skip = (pageNum - 1) * limitNum;
-
-        const [reviews, total] = await Promise.all([
-            prisma.review.findMany({
-                where: { productId },
-                include: {
-                    user: {
-                        select: {
-                            name: true,
-                            email: true
-                        }
-                    }
-                },
-                orderBy: { createdAt: 'desc' },
-                skip,
-                take: limitNum
-            }),
-            prisma.review.count({ where: { productId } })
-        ]);
-
-        // Calculate average rating
-        const avgRating = await prisma.review.aggregate({
-            where: { productId },
-            _avg: { rating: true }
-        });
-
-        res.json({
-            reviews,
-            averageRating: avgRating._avg.rating || 0,
-            totalReviews: total,
-            pagination: {
-                page: pageNum,
-                limit: limitNum,
-                total,
-                totalPages: Math.ceil(total / limitNum)
-            }
-        });
-    } catch (error) {
-        console.error('Get reviews error:', error);
-        res.status(500).json({ error: 'Failed to fetch reviews' });
-    }
-});
-
-// Delete review
 router.delete('/:id', async (req: Request, res: Response): Promise<void> => {
     try {
         const userId = req.headers['user-id'] as string;
@@ -159,5 +176,9 @@ router.delete('/:id', async (req: Request, res: Response): Promise<void> => {
         res.status(500).json({ error: 'Failed to delete review' });
     }
 });
+
+// ============================================================================
+// Export
+// ============================================================================
 
 export default router;

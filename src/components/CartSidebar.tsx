@@ -1,7 +1,15 @@
+// ============================================================================
+// Imports
+// ============================================================================
+
 import { X, Minus, Plus, Trash2, ShoppingBag } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { Button } from './Button';
+
+// ============================================================================
+// CartSidebar Component
+// ============================================================================
 
 export default function CartSidebar() {
     const {

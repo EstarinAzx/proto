@@ -1,10 +1,22 @@
+// ============================================================================
+// Imports
+// ============================================================================
+
 import * as React from "react";
 import { cn } from "../lib/utils";
+
+// ============================================================================
+// Props Interface
+// ============================================================================
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
     label?: string;
     error?: string;
 }
+
+// ============================================================================
+// Input Component
+// ============================================================================
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
     ({ className, type, label, error, ...props }, ref) => {
@@ -32,5 +44,9 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 );
 
 Input.displayName = "Input";
+
+// ============================================================================
+// Exports
+// ============================================================================
 
 export { Input };

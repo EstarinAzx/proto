@@ -1,10 +1,19 @@
+// ============================================================================
+// Imports
+// ============================================================================
 import React, { useState } from 'react';
 import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { Input } from '../components/Input';
 import { Button } from '../components/Button';
 import { LayoutDashboard, ArrowLeft } from 'lucide-react';
 
+// ============================================================================
+// Component
+// ============================================================================
 export default function ResetPassword() {
+    // ============================================================================
+    // State
+    // ============================================================================
     const [searchParams] = useSearchParams();
     const token = searchParams.get('token');
     const navigate = useNavigate();
@@ -15,6 +24,9 @@ export default function ResetPassword() {
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
 
+    // ============================================================================
+    // Event Handlers
+    // ============================================================================
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (newPassword !== confirmPassword) {
@@ -48,6 +60,9 @@ export default function ResetPassword() {
         }
     };
 
+    // ============================================================================
+    // Render
+    // ============================================================================
     if (!token) {
         return (
             <div className="min-h-screen flex items-center justify-center">
@@ -73,7 +88,7 @@ export default function ResetPassword() {
                 <div>
                     <blockquote className="space-y-2">
                         <p className="text-lg">
-                            &ldquo;Passwords are like underwear: you don’t let people see it, you should change it often, and you shouldn’t share it with strangers.&rdquo;
+                            &ldquo;Passwords are like underwear: you don't let people see it, you should change it often, and you shouldn't share it with strangers.&rdquo;
                         </p>
                         <footer className="text-sm text-zinc-400">Chris Pirillo</footer>
                     </blockquote>

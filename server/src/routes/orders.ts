@@ -1,10 +1,20 @@
+// ============================================================================
+// Imports
+// ============================================================================
 import { Router, Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 
+// ============================================================================
+// Router Setup
+// ============================================================================
 const router = Router();
 const prisma = new PrismaClient();
 
-// Place an order
+// ============================================================================
+// Routes - Create Order (Transaction Logic)
+// ============================================================================
+
+// Place an Order
 router.post('/', async (req: Request, res: Response): Promise<void> => {
     try {
         const userId = req.headers['user-id'] as string;
@@ -93,7 +103,11 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
     }
 });
 
-// Get user's order history
+// ============================================================================
+// Routes - User History (Get My Orders)
+// ============================================================================
+
+// Get User's Order History
 router.get('/', async (req: Request, res: Response): Promise<void> => {
     try {
         const userId = req.headers['user-id'] as string;
@@ -120,7 +134,11 @@ router.get('/', async (req: Request, res: Response): Promise<void> => {
     }
 });
 
-// Admin: Get all orders
+// ============================================================================
+// Routes - Admin (Get All Orders, Update Status)
+// ============================================================================
+
+// Admin: Get All Orders
 router.get('/all', async (req: Request, res: Response): Promise<void> => {
     try {
         // In a real app, verify admin role here
@@ -143,7 +161,7 @@ router.get('/all', async (req: Request, res: Response): Promise<void> => {
     }
 });
 
-// Admin: Update order status
+// Admin: Update Order Status
 router.put('/:id/status', async (req: Request, res: Response): Promise<void> => {
     try {
         const { id } = req.params;
@@ -161,4 +179,7 @@ router.put('/:id/status', async (req: Request, res: Response): Promise<void> => 
     }
 });
 
+// ============================================================================
+// Export
+// ============================================================================
 export default router;

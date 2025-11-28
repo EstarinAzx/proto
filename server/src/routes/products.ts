@@ -1,9 +1,19 @@
+// ============================================================================
+// Imports
+// ============================================================================
 import { Router, Request, Response } from 'express';
 import { prisma } from '../index';
 
+// ============================================================================
+// Router Setup
+// ============================================================================
 const router = Router();
 
-// Get all products with filtering
+// ============================================================================
+// Routes - Public
+// ============================================================================
+
+// Get All Products
 router.get('/', async (req: Request, res: Response) => {
     try {
         const { search, minPrice, maxPrice, categoryId } = req.query;
@@ -38,7 +48,11 @@ router.get('/', async (req: Request, res: Response) => {
     }
 });
 
-// Create product (Admin only - simplified for now)
+// ============================================================================
+// Routes - Protected/Admin
+// ============================================================================
+
+// Create Product
 router.post('/', async (req: Request, res: Response) => {
     try {
         const { name, description, price, stock, imageUrl, categoryId } = req.body;
@@ -58,7 +72,7 @@ router.post('/', async (req: Request, res: Response) => {
     }
 });
 
-// Update product
+// Update Product
 router.put('/:id', async (req: Request, res: Response): Promise<void> => {
     try {
         const { id } = req.params;
@@ -83,7 +97,7 @@ router.put('/:id', async (req: Request, res: Response): Promise<void> => {
     }
 });
 
-// Delete product
+// Delete Product
 router.delete('/:id', async (req: Request, res: Response): Promise<void> => {
     try {
         const { id } = req.params;
@@ -95,4 +109,7 @@ router.delete('/:id', async (req: Request, res: Response): Promise<void> => {
     }
 });
 
+// ============================================================================
+// Export
+// ============================================================================
 export default router;

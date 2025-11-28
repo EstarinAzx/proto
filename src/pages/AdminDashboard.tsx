@@ -1,3 +1,6 @@
+// ============================================================================
+// Imports
+// ============================================================================
 import { useEffect, useState } from 'react';
 import Layout from '../components/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/Card';
@@ -6,6 +9,9 @@ import { Input } from '../components/Input';
 import { Trash2, Plus } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
+// ============================================================================
+// Interfaces
+// ============================================================================
 interface Category {
     id: string;
     name: string;
@@ -30,12 +36,21 @@ interface User {
     createdAt: string;
 }
 
+// ============================================================================
+// Component & State
+// ============================================================================
 export default function AdminDashboard() {
     const { user, logout } = useAuth();
+
+    // Tab state
     const [activeTab, setActiveTab] = useState<'products' | 'users' | 'categories'>('products');
+
+    // Data state
     const [products, setProducts] = useState<Product[]>([]);
     const [users, setUsers] = useState<User[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
+
+    // Product form state
     const [showProductForm, setShowProductForm] = useState(false);
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
     const [uploading, setUploading] = useState(false);
@@ -47,14 +62,22 @@ export default function AdminDashboard() {
         imageUrl: '',
         categoryId: '',
     });
+
+    // Category form state
     const [newCategoryName, setNewCategoryName] = useState('');
 
+    // ========================================================================
+    // API Fetching
+    // ========================================================================
+
+    // Initial data load
     useEffect(() => {
         fetchProducts();
         fetchUsers();
         fetchCategories();
     }, []);
 
+    // Fetch all products
     const fetchProducts = async () => {
         try {
             const response = await fetch('http://localhost:3000/api/products');
@@ -65,6 +88,7 @@ export default function AdminDashboard() {
         }
     };
 
+    // Fetch all users
     const fetchUsers = async () => {
         try {
             const response = await fetch('http://localhost:3000/api/users');
@@ -75,6 +99,7 @@ export default function AdminDashboard() {
         }
     };
 
+    // Fetch all categories
     const fetchCategories = async () => {
         try {
             const response = await fetch('http://localhost:3000/api/categories');
@@ -85,6 +110,11 @@ export default function AdminDashboard() {
         }
     };
 
+    // ========================================================================
+    // Event Handlers
+    // ========================================================================
+
+    // Handle product image upload
     const handleImageUpload = async (file: File): Promise<string> => {
         const formData = new FormData();
         formData.append('image', file);
@@ -99,6 +129,7 @@ export default function AdminDashboard() {
         return data.imageUrl;
     };
 
+    // Create new product
     const handleCreateProduct = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
@@ -115,6 +146,7 @@ export default function AdminDashboard() {
         }
     };
 
+    // Update existing product
     const handleUpdateProduct = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!editingProduct) return;
@@ -139,6 +171,7 @@ export default function AdminDashboard() {
         }
     };
 
+    // Delete product
     const handleDeleteProduct = async (id: string) => {
         if (!confirm('Delete this product?')) return;
         try {
@@ -151,6 +184,7 @@ export default function AdminDashboard() {
         }
     };
 
+    // Delete user (with self-delete warning)
     const handleDeleteUser = async (id: string, email: string) => {
         const isSelfDelete = user?.id === id;
 
@@ -175,6 +209,7 @@ export default function AdminDashboard() {
         }
     };
 
+    // Create new category
     const handleCreateCategory = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!newCategoryName.trim()) return;
@@ -192,6 +227,7 @@ export default function AdminDashboard() {
         }
     };
 
+    // Delete category
     const handleDeleteCategory = async (id: string) => {
         if (!confirm('Delete this category?')) return;
         try {
@@ -204,6 +240,11 @@ export default function AdminDashboard() {
         }
     };
 
+    // ========================================================================
+    // Helper Functions
+    // ========================================================================
+
+    // Promote or demote user role
     const handlePromoteUser = async (userId: string, currentRole: string) => {
         let newRole: string;
         let action: string;
@@ -236,9 +277,15 @@ export default function AdminDashboard() {
         }
     };
 
+    // ========================================================================
+    // Main Render
+    // ========================================================================
     return (
         <Layout>
             <div className="space-y-6">
+                {/* ============================================================
+                    Page Header
+                    ============================================================ */}
                 <div>
                     <h2 className="text-3xl font-bold tracking-tight">Admin Dashboard</h2>
                     <p className="text-muted-foreground">
@@ -246,6 +293,9 @@ export default function AdminDashboard() {
                     </p>
                 </div>
 
+                {/* ============================================================
+                    Tabs Navigation
+                    ============================================================ */}
                 <div className="flex gap-2 border-b">
                     <button
                         onClick={() => setActiveTab('products')}
@@ -276,13 +326,18 @@ export default function AdminDashboard() {
                     </button>
                 </div>
 
+                {/* ============================================================
+                    Products Tab
+                    ============================================================ */}
                 {activeTab === 'products' && (
                     <div className="space-y-4">
+                        {/* Add Product Button */}
                         <Button onClick={() => setShowProductForm(!showProductForm)}>
                             <Plus className="mr-2 h-4 w-4" />
                             Add Product
                         </Button>
 
+                        {/* New Product Form Modal */}
                         {showProductForm && (
                             <Card>
                                 <CardHeader>
@@ -381,6 +436,7 @@ export default function AdminDashboard() {
                             </Card>
                         )}
 
+                        {/* Edit Product Form Modal */}
                         {editingProduct && (
                             <Card>
                                 <CardHeader>
@@ -488,6 +544,7 @@ export default function AdminDashboard() {
                             </Card>
                         )}
 
+                        {/* Products Table */}
                         <Card>
                             <CardContent className="p-0">
                                 <table className="w-full">
@@ -533,8 +590,12 @@ export default function AdminDashboard() {
                     </div>
                 )}
 
+                {/* ============================================================
+                    Categories Tab
+                    ============================================================ */}
                 {activeTab === 'categories' && (
                     <div className="space-y-4">
+                        {/* Add Category Form */}
                         <Card>
                             <CardHeader>
                                 <CardTitle>Add Category</CardTitle>
@@ -556,6 +617,7 @@ export default function AdminDashboard() {
                             </CardContent>
                         </Card>
 
+                        {/* Categories Table */}
                         <Card>
                             <CardHeader>
                                 <CardTitle>Categories</CardTitle>
@@ -592,6 +654,9 @@ export default function AdminDashboard() {
                     </div>
                 )}
 
+                {/* ============================================================
+                    Users Tab
+                    ============================================================ */}
                 {activeTab === 'users' && (
                     <Card>
                         <CardContent className="p-0">

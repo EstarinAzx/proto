@@ -1,15 +1,27 @@
+// ============================================================================
+// Imports
+// ============================================================================
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Input } from '../components/Input';
 import { Button } from '../components/Button';
 import { LayoutDashboard, ArrowLeft } from 'lucide-react';
 
+// ============================================================================
+// Component
+// ============================================================================
 export default function ForgotPassword() {
+    // ============================================================================
+    // State
+    // ============================================================================
     const [email, setEmail] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
 
+    // ============================================================================
+    // Event Handlers
+    // ============================================================================
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
@@ -37,6 +49,9 @@ export default function ForgotPassword() {
         }
     };
 
+    // ============================================================================
+    // Render
+    // ============================================================================
     return (
         <div className="min-h-screen grid lg:grid-cols-2">
             {/* Left Side - Branding */}

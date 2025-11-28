@@ -1,3 +1,7 @@
+// ============================================================================
+// Imports
+// ============================================================================
+
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -16,9 +20,17 @@ import {
 import { Button } from './Button';
 import CartSidebar from './CartSidebar';
 
+// ============================================================================
+// Props Interface
+// ============================================================================
+
 interface LayoutProps {
     children: React.ReactNode;
 }
+
+// ============================================================================
+// Layout Component
+// ============================================================================
 
 export default function Layout({ children }: LayoutProps) {
     const { user, logout } = useAuth();
@@ -26,6 +38,7 @@ export default function Layout({ children }: LayoutProps) {
     const location = useLocation();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+    // Navigation items
     const navigation = [
         { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
         { name: 'Store', href: '/store', icon: ShoppingBag },

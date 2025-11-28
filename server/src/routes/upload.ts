@@ -1,24 +1,41 @@
+// ============================================================================
+// Imports
+// ============================================================================
+
 import { Router, Request, Response } from 'express';
 import { v2 as cloudinary } from 'cloudinary';
 import multer from 'multer';
 
+// ============================================================================
+// Router Setup
+// ============================================================================
+
 const router = Router();
 
-// Configure Cloudinary
+// ============================================================================
+// Configuration - Cloudinary
+// ============================================================================
+
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
     api_key: process.env.CLOUDINARY_API_KEY,
     api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// Configure multer for memory storage
+// ============================================================================
+// Configuration - Multer
+// ============================================================================
+
 const storage = multer.memoryStorage();
 const upload = multer({
     storage,
     limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
 });
 
-// Upload image endpoint
+// ============================================================================
+// Route - Upload Image
+// ============================================================================
+
 router.post('/', upload.single('image'), async (req: Request, res: Response): Promise<void> => {
     try {
         if (!req.file) {
@@ -46,5 +63,9 @@ router.post('/', upload.single('image'), async (req: Request, res: Response): Pr
         res.status(500).json({ error: 'Failed to upload image' });
     }
 });
+
+// ============================================================================
+// Export
+// ============================================================================
 
 export default router;

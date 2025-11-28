@@ -1,3 +1,6 @@
+// ============================================================================
+// Imports
+// ============================================================================
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -5,13 +8,22 @@ import { Button } from '../components/Button';
 import { Input } from '../components/Input';
 import { LayoutDashboard } from 'lucide-react';
 
+// ============================================================================
+// Component
+// ============================================================================
 export default function Login() {
+  // ============================================================================
+  // State
+  // ============================================================================
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
+  // ============================================================================
+  // Event Handlers
+  // ============================================================================
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -25,6 +37,9 @@ export default function Login() {
     }
   };
 
+  // ============================================================================
+  // Render
+  // ============================================================================
   return (
     <div className="min-h-screen grid lg:grid-cols-2">
       {/* Left Side - Branding */}

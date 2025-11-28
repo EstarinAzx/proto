@@ -1,48 +1,17 @@
+// ============================================================================
+// Imports
+// ============================================================================
 import { Router, Request, Response } from 'express';
 import { prisma } from '../index';
 
+// ============================================================================
+// Router Setup
+// ============================================================================
 const router = Router();
 
-// Get all users
-router.get('/', async (req: Request, res: Response) => {
-    try {
-        const users = await prisma.user.findMany({
-            select: {
-                id: true,
-                email: true,
-                username: true,
-                name: true,
-                role: true,
-                createdAt: true,
-            },
-            orderBy: { createdAt: 'desc' },
-        });
-        res.json(users);
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch users' });
-    }
-});
-
-// Check username availability
-router.get('/check-username', async (req: Request, res: Response) => {
-    try {
-        const { username } = req.query;
-        if (!username || typeof username !== 'string') {
-            res.status(400).json({ error: 'Username is required' });
-            return;
-        }
-
-        const user = await prisma.user.findUnique({
-            where: { username }
-        });
-
-        res.json({ available: !user });
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to check username' });
-    }
-});
-
-// Get current user profile
+// ============================================================================
+// Routes - User Profile - Get Me
+// ============================================================================
 router.get('/me', async (req: Request, res: Response) => {
     try {
         const userId = req.headers['user-id'] as string;
@@ -73,7 +42,9 @@ router.get('/me', async (req: Request, res: Response) => {
     }
 });
 
-// Update current user profile
+// ============================================================================
+// Routes - User Profile - Update Me
+// ============================================================================
 router.put('/me', async (req: Request, res: Response) => {
     try {
         const userId = req.headers['user-id'] as string;
@@ -125,7 +96,7 @@ router.put('/me', async (req: Request, res: Response) => {
     }
 });
 
-// Change password
+// Password change route
 router.put('/me/password', async (req: Request, res: Response) => {
     try {
         const userId = req.headers['user-id'] as string;
@@ -161,7 +132,63 @@ router.put('/me/password', async (req: Request, res: Response) => {
     }
 });
 
-// Promote user to admin (SUPERADMIN only)
+// Username check route
+router.get('/check-username', async (req: Request, res: Response) => {
+    try {
+        const { username } = req.query;
+        if (!username || typeof username !== 'string') {
+            res.status(400).json({ error: 'Username is required' });
+            return;
+        }
+
+        const user = await prisma.user.findUnique({
+            where: { username }
+        });
+
+        res.json({ available: !user });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to check username' });
+    }
+});
+
+// ============================================================================
+// Routes - Admin Management - Get All Users
+// ============================================================================
+router.get('/', async (req: Request, res: Response) => {
+    try {
+        const users = await prisma.user.findMany({
+            select: {
+                id: true,
+                email: true,
+                username: true,
+                name: true,
+                role: true,
+                createdAt: true,
+            },
+            orderBy: { createdAt: 'desc' },
+        });
+        res.json(users);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch users' });
+    }
+});
+
+// ============================================================================
+// Routes - Admin Management - Delete User
+// ============================================================================
+router.delete('/:id', async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        await prisma.user.delete({ where: { id } });
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to delete user' });
+    }
+});
+
+// ============================================================================
+// Routes - Admin Management - Role Management
+// ============================================================================
 router.patch('/:id/role', async (req: Request, res: Response) => {
     try {
         const requesterId = req.headers['user-id'] as string;
@@ -204,15 +231,7 @@ router.patch('/:id/role', async (req: Request, res: Response) => {
     }
 });
 
-// Delete user
-router.delete('/:id', async (req: Request, res: Response) => {
-    try {
-        const { id } = req.params;
-        await prisma.user.delete({ where: { id } });
-        res.json({ success: true });
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to delete user' });
-    }
-});
-
+// ============================================================================
+// Export
+// ============================================================================
 export default router;

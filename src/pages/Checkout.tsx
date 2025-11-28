@@ -1,3 +1,6 @@
+// ============================================================================
+// Imports
+// ============================================================================
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
@@ -7,12 +10,31 @@ import { Input } from '../components/Input';
 import { Button } from '../components/Button';
 import { useAuth } from '../context/AuthContext';
 
+// ============================================================================
+// Interfaces
+// ============================================================================
+interface FormData {
+    address: string;
+    city: string;
+    zipCode: string;
+    country: string;
+    cardNumber: string;
+    expiryDate: string;
+    cvv: string;
+}
+
+// ============================================================================
+// Component & Hooks
+// ============================================================================
 export default function Checkout() {
     const { cartItems, cartTotal, clearCart } = useCart();
     const { user } = useAuth();
     const navigate = useNavigate();
-    const [isProcessing, setIsProcessing] = useState(false);
 
+    // ============================================================================
+    // Form State
+    // ============================================================================
+    const [isProcessing, setIsProcessing] = useState(false);
     const [formData, setFormData] = useState({
         address: '',
         city: '',
@@ -23,11 +45,17 @@ export default function Checkout() {
         cvv: ''
     });
 
+    // ============================================================================
+    // Event Handlers
+    // ============================================================================
+    
+    // Handle Input Change
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
+    // Handle Submit
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsProcessing(true);
@@ -55,6 +83,11 @@ export default function Checkout() {
         }
     };
 
+    // ============================================================================
+    // Render
+    // ============================================================================
+    
+    // Empty Cart State
     if (cartItems.length === 0) {
         return (
             <Layout>
@@ -66,13 +99,14 @@ export default function Checkout() {
         );
     }
 
+    // Main Layout
     return (
         <Layout>
             <div className="max-w-4xl mx-auto">
                 <h1 className="text-3xl font-bold mb-8">Checkout</h1>
 
                 <div className="grid gap-8 md:grid-cols-2">
-                    {/* Shipping & Payment Form */}
+                    {/* Form Section */}
                     <div className="space-y-6">
                         <Card>
                             <CardHeader>

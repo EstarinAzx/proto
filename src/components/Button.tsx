@@ -1,12 +1,24 @@
+// ============================================================================
+// Imports
+// ============================================================================
+
 import * as React from "react";
 import { cn } from "../lib/utils";
 import { Loader2 } from "lucide-react";
+
+// ============================================================================
+// Props Interface
+// ============================================================================
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     variant?: "primary" | "secondary" | "outline" | "ghost" | "destructive";
     size?: "sm" | "md" | "lg" | "icon";
     isLoading?: boolean;
 }
+
+// ============================================================================
+// Button Component
+// ============================================================================
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     ({ className, variant = "primary", size = "md", isLoading, children, disabled, ...props }, ref) => {
@@ -45,5 +57,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 );
 
 Button.displayName = "Button";
+
+// ============================================================================
+// Exports
+// ============================================================================
 
 export { Button };

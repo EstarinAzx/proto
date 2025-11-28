@@ -1,12 +1,33 @@
+// ============================================================================
+// Imports
+// ============================================================================
 import { Router, Request, Response } from 'express';
 import { prisma } from '../index';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
+// ============================================================================
+// Router Setup
+// ============================================================================
 const router = Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecretkey';
 
-// Signup
+// ============================================================================
+// Helper Functions
+// ============================================================================
+// Generate Access Token
+const generateAccessToken = (userId: string): string => {
+    return jwt.sign({ userId }, JWT_SECRET, { expiresIn: '1h' });
+};
+
+// Generate Refresh Token
+const generateRefreshToken = (userId: string): string => {
+    return jwt.sign({ userId }, JWT_SECRET, { expiresIn: '7d' });
+};
+
+// ============================================================================
+// Routes - Register
+// ============================================================================
 router.post('/signup', async (req: Request, res: Response): Promise<void> => {
     try {
         const { email, password, name, username } = req.body;
@@ -51,8 +72,8 @@ router.post('/signup', async (req: Request, res: Response): Promise<void> => {
             },
         });
 
-        const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '1h' });
-        const refreshToken = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '7d' });
+        const token = generateAccessToken(user.id);
+        const refreshToken = generateRefreshToken(user.id);
 
         // Save refresh token
         await prisma.refreshToken.create({
@@ -81,7 +102,9 @@ router.post('/signup', async (req: Request, res: Response): Promise<void> => {
     }
 });
 
-// Login
+// ============================================================================
+// Routes - Login
+// ============================================================================
 router.post('/login', async (req: Request, res: Response): Promise<void> => {
     try {
         const { email, password } = req.body;
@@ -104,8 +127,8 @@ router.post('/login', async (req: Request, res: Response): Promise<void> => {
         }
 
         // Generate tokens
-        const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '1h' });
-        const refreshToken = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '7d' });
+        const token = generateAccessToken(user.id);
+        const refreshToken = generateRefreshToken(user.id);
 
         // Save refresh token
         await prisma.refreshToken.create({
@@ -134,7 +157,9 @@ router.post('/login', async (req: Request, res: Response): Promise<void> => {
     }
 });
 
-// Refresh Token
+// ============================================================================
+// Routes - Refresh Token
+// ============================================================================
 router.post('/refresh-token', async (req: Request, res: Response): Promise<void> => {
     try {
         const { refreshToken } = req.body;
@@ -155,7 +180,7 @@ router.post('/refresh-token', async (req: Request, res: Response): Promise<void>
         }
 
         // Generate new access token
-        const token = jwt.sign({ userId: savedToken.userId }, JWT_SECRET, { expiresIn: '1h' });
+        const token = generateAccessToken(savedToken.userId);
 
         res.json({ token });
     } catch (error) {
@@ -164,7 +189,9 @@ router.post('/refresh-token', async (req: Request, res: Response): Promise<void>
     }
 });
 
-// Logout
+// ============================================================================
+// Routes - Logout
+// ============================================================================
 router.post('/logout', async (req: Request, res: Response): Promise<void> => {
     try {
         const { refreshToken } = req.body;
@@ -178,7 +205,9 @@ router.post('/logout', async (req: Request, res: Response): Promise<void> => {
     }
 });
 
-// Forgot Password
+// ============================================================================
+// Routes - Forgot Password
+// ============================================================================
 router.post('/forgot-password', async (req: Request, res: Response): Promise<void> => {
     try {
         const { email } = req.body;
@@ -212,7 +241,9 @@ router.post('/forgot-password', async (req: Request, res: Response): Promise<voi
     }
 });
 
-// Reset Password
+// ============================================================================
+// Routes - Reset Password
+// ============================================================================
 router.post('/reset-password', async (req: Request, res: Response): Promise<void> => {
     try {
         const { token, newPassword } = req.body;
@@ -247,4 +278,7 @@ router.post('/reset-password', async (req: Request, res: Response): Promise<void
     }
 });
 
+// ============================================================================
+// Export
+// ============================================================================
 export default router;

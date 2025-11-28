@@ -1,9 +1,15 @@
+// ============================================================================
+// Imports
+// ============================================================================
 import { useEffect, useState } from 'react';
 import Layout from '../components/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/Card';
 import { useAuth } from '../context/AuthContext';
 import { Package, Check, X, Truck, Clock } from 'lucide-react';
 
+// ============================================================================
+// Types
+// ============================================================================
 interface Order {
     id: string;
     userId: string;
@@ -29,15 +35,27 @@ interface Order {
     country: string;
 }
 
+// ============================================================================
+// Component
+// ============================================================================
 export default function AdminOrders() {
+    // ============================================================================
+    // State
+    // ============================================================================
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
     const { user } = useAuth();
 
+    // ============================================================================
+    // Effects
+    // ============================================================================
     useEffect(() => {
         fetchOrders();
     }, []);
 
+    // ============================================================================
+    // API Calls
+    // ============================================================================
     const fetchOrders = async () => {
         try {
             const response = await fetch('http://localhost:3000/api/orders/all', {
@@ -77,6 +95,9 @@ export default function AdminOrders() {
         }
     };
 
+    // ============================================================================
+    // Helper Functions
+    // ============================================================================
     const getStatusColor = (status: string) => {
         switch (status) {
             case 'PENDING': return 'bg-yellow-100 text-yellow-800';
@@ -99,6 +120,9 @@ export default function AdminOrders() {
         }
     };
 
+    // ============================================================================
+    // Render
+    // ============================================================================
     return (
         <Layout>
             <div className="space-y-6">

@@ -1,9 +1,17 @@
+// ============================================================================
+// Imports
+// ============================================================================
 import { Router, Request, Response } from 'express';
 import { prisma } from '../index';
 
+// ============================================================================
+// Router Setup
+// ============================================================================
 const router = Router();
 
-// Get user's cart
+// ============================================================================
+// Routes - Get Cart
+// ============================================================================
 router.get('/', async (req: Request, res: Response): Promise<void> => {
     try {
         const userId = req.headers['user-id'] as string;
@@ -48,7 +56,9 @@ router.get('/', async (req: Request, res: Response): Promise<void> => {
     }
 });
 
-// Add item to cart
+// ============================================================================
+// Routes - Add Item
+// ============================================================================
 router.post('/add', async (req: Request, res: Response): Promise<void> => {
     try {
         const userId = req.headers['user-id'] as string;
@@ -119,7 +129,9 @@ router.post('/add', async (req: Request, res: Response): Promise<void> => {
     }
 });
 
-// Update item quantity
+// ============================================================================
+// Routes - Update Quantity
+// ============================================================================
 router.put('/item/:id', async (req: Request, res: Response): Promise<void> => {
     try {
         const { id } = req.params;
@@ -141,7 +153,9 @@ router.put('/item/:id', async (req: Request, res: Response): Promise<void> => {
     }
 });
 
-// Remove item from cart
+// ============================================================================
+// Routes - Remove Item
+// ============================================================================
 router.delete('/item/:id', async (req: Request, res: Response): Promise<void> => {
     try {
         const { id } = req.params;
@@ -153,7 +167,9 @@ router.delete('/item/:id', async (req: Request, res: Response): Promise<void> =>
     }
 });
 
-// Clear cart
+// ============================================================================
+// Routes - Clear Cart
+// ============================================================================
 router.delete('/clear', async (req: Request, res: Response): Promise<void> => {
     try {
         const userId = req.headers['user-id'] as string;
@@ -178,4 +194,7 @@ router.delete('/clear', async (req: Request, res: Response): Promise<void> => {
     }
 });
 
+// ============================================================================
+// Export
+// ============================================================================
 export default router;
