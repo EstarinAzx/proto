@@ -65,6 +65,28 @@ router.post('/', upload.single('image'), async (req: Request, res: Response): Pr
 });
 
 // ============================================================================
+// Route - Check Configuration (for debugging)
+// ============================================================================
+
+router.get('/config-check', async (req: Request, res: Response): Promise<void> => {
+    try {
+        const config = {
+            cloudName: process.env.CLOUDINARY_CLOUD_NAME ? '✓ Set' : '✗ Missing',
+            apiKey: process.env.CLOUDINARY_API_KEY ? '✓ Set' : '✗ Missing',
+            apiSecret: process.env.CLOUDINARY_API_SECRET ? '✓ Set' : '✗ Missing',
+        };
+
+        res.json({
+            status: 'Cloudinary Configuration',
+            config,
+            allSet: !!(process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET)
+        });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to check config' });
+    }
+});
+
+// ============================================================================
 // Export
 // ============================================================================
 

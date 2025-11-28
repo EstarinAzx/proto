@@ -142,14 +142,24 @@ export default function Profile() {
             const formData = new FormData();
             formData.append('image', file);
 
+            console.log('Uploading to:', `${API_URL}/api/upload`);
+            console.log('File:', file.name, file.size, file.type);
+
             const response = await fetch(`${API_URL}/api/upload`, {
                 method: 'POST',
                 body: formData,
             });
 
-            if (!response.ok) throw new Error('Upload failed');
+            console.log('Upload response status:', response.status);
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+                console.error('Upload failed:', errorData);
+                throw new Error(errorData.error || `Upload failed with status ${response.status}`);
+            }
 
             const data = await response.json();
+            console.log('Upload success:', data);
             const imageUrl = data.imageUrl;
 
             // Update profile with new picture
@@ -159,17 +169,21 @@ export default function Profile() {
                     'Content-Type': 'application/json',
                     'user-id': user?.id || '',
                 },
-                body: JSON.stringify({ ...profile, profilePicture: imageUrl }),
+                body: JSON.stringify({ profilePicture: imageUrl }),
             });
 
-            if (!updateResponse.ok) throw new Error('Failed to update profile picture');
+            if (!updateResponse.ok) {
+                const errorData = await updateResponse.json().catch(() => ({ error: 'Unknown error' }));
+                throw new Error(errorData.error || 'Failed to update profile picture');
+            }
 
             setProfile({ ...profile, profilePicture: imageUrl });
             await refreshUser();
             setMessage('Profile picture updated successfully!');
             setTimeout(() => setMessage(''), 3000);
         } catch (err: any) {
-            setError(err.message || 'Failed to upload profile picture');
+            console.error('Full upload error:', err);
+            setError(err.message || 'Failed to upload image');
         } finally {
             setUploading(false);
         }
